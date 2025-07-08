@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Últimas películas agregadas</h2>
+        <div class="row">
+            {% for film in latest_films %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if film.poster %}
+                    <img src="{{ film.poster.url }}" class="card-img-top" alt="{{ film.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ film.title }}</h5>
+                        <p class="card-text">{{ film.year }} · {{ film.director }}</p>
+                        <a href="{% url 'film_detail' film.id %}" class="btn btn-primary">Ver detalles</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h2 class="mb-4">Últimas reseñas</h2>
+        {% for review in latest_reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.film.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    {{ review.user.username }} · {{ review.rating }}/5
+                </h6>
+                {% if review.review_text %}
+                <p class="card-text">{{ review.review_text|truncatechars:100 }}</p>
+                {% endif %}
+                <a href="{% url 'film_detail' review.film.id %}" class="card-link">Ver película</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ film.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        {% if film.poster %}
+        <img src="{{ film.poster.url }}" class="img-fluid rounded" alt="{{ film.title }}">
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        <h1>{{ film.title }} ({{ film.year }})</h1>
+        {% if film.original_title %}
+        <p class="text-muted">{{ film.original_title }}</p>
+        {% endif %}
+        <p><strong>Director:</strong> {{ film.director }}</p>
+        <p><strong>Género:</strong> {{ film.genre }}</p>
+        <p><strong>Duración:</strong> {{ film.duration }} minutos</p>
+        
+        <h3 class="mt-4">Sinopsis</h3>
+        <p>{{ film.synopsis }}</p>
+        
+        {% if user.is_authenticated %}
+        <div class="mt-4">
+            <a href="{% url 'toggle_watchlist' film.id %}" class="btn btn-outline-primary">
+                {% if in_watchlist %}Quitar de watchlist{% else %}Agregar a watchlist{% endif %}
+            </a>
+            {% if not user_review %}
+            <a href="{% url 'add_review' film.id %}" class="btn btn-primary ms-2">Escribir reseña</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h2>Reseñas</h2>
+        
+        {% if user_review %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>Tu reseña</strong>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ user_review.rating }}/5</h5>
+                {% if user_review.review_text %}
+                <p class="card-text">{{ user_review.review_text }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% for review in reviews %}
+        {% if review != user_review %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.user.username }} · {{ review.rating }}/5</h5>
+                {% if review.review_text %}
+                <p class="card-text">{{ review.review_text }}</p>
+                {% endif %}
+                <small class="text-muted">{{ review.created_at|date:"d/m/Y H:i" }}</small>
+            </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <p>No hay reseñas aún. ¡Sé el primero en opinar!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
